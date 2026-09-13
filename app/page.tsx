@@ -1,38 +1,34 @@
-export default function Home() {
-  const year = new Date().getFullYear();
+import { createClient } from "./lib/supabase/server";
+import { AuthForm } from "./auth-form";
+import { LogoutButton } from "./logout-button";
+
+export default async function Home() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   return (
     <>
       <header className="hero">
-        <h1>Krystal</h1>
-        <p className="tagline">program manager at PACE</p>
+        <h1>RISE Center Room Reservations</h1>
+        <p className="tagline">Book one of the Center&apos;s 5 rooms</p>
       </header>
 
       <main>
-        <section className="about" aria-labelledby="about-heading">
-          <h2 id="about-heading">About</h2>
-          <p>
-            Hi, I&apos;m Krystal, program manager at PACE. I work on building
-            useful systems and running programs that help students learn and
-            create.
-          </p>
-        </section>
-
-        <section className="semester" aria-labelledby="semester-heading">
-          <h2 id="semester-heading">This semester</h2>
-          <ul>
-            <li>Building a room reservation system</li>
-            <li>Running a student leadership program</li>
-            <li>Running 2 makerspaces and a recording studio</li>
-          </ul>
-        </section>
+        {user ? (
+          <section aria-labelledby="account-heading">
+            <h2 id="account-heading">Your account</h2>
+            <p>Signed in as {user.email}</p>
+            <LogoutButton />
+          </section>
+        ) : (
+          <section aria-labelledby="auth-heading">
+            <h2 id="auth-heading">Log in or sign up</h2>
+            <AuthForm />
+          </section>
+        )}
       </main>
-
-      <footer className="footer">
-        <p>
-          &copy; {year} Krystal
-        </p>
-      </footer>
     </>
   );
 }
